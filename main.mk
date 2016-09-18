@@ -1,10 +1,12 @@
 .PHONY: latest
 latest:: txt html
 
-include lib/compat.mk
-include lib/config.mk
-include lib/id.mk
-include lib/ghpages.mk
+LIBDIR ?= lib
+include $(LIBDIR)/compat.mk
+include $(LIBDIR)/config.mk
+include $(LIBDIR)/id.mk
+include $(LIBDIR)/ghpages.mk
+include $(LIBDIR)/update.mk
 
 ## Basic Targets
 .PHONY: txt html pdf
@@ -14,9 +16,24 @@ pdf:: $(addsuffix .pdf,$(drafts))
 
 ## Basic Recipes
 .INTERMEDIATE: $(filter-out $(join $(drafts),$(draft_types)),$(addsuffix .xml,$(drafts)))
+
+ifdef MD_PREPROCESSOR
+.INTERMEDIATE: $(addsuffix .mdtmp,$(drafts))
+%.mdtmp: %.md
+	$(MD_PREPROCESSOR) < $< > $@
+
+%.xml: %.mdtmp
+else
 %.xml: %.md
+endif
 	XML_RESOURCE_ORG_PREFIX=$(XML_RESOURCE_ORG_PREFIX) \
 	  $(kramdown-rfc2629) $< > $@
+
+ifdef REFCACHEDIR
+%.xml: .refcache
+.refcache: $(REFCACHEDIR)
+	ln -s $< $@
+endif
 
 %.xml: %.org
 	$(oxtradoc) -m outline-to-xml -n "$@" $< > $@
@@ -26,11 +43,11 @@ pdf:: $(addsuffix .pdf,$(drafts))
 
 %.htmltmp: %.xml
 	$(xml2rfc) $< -o $@ --html
-%.html: %.htmltmp lib/addstyle.sed lib/style.css
+%.html: %.htmltmp $(LIBDIR)/addstyle.sed $(LIBDIR)/style.css
 ifeq (,$(CI_REPO_FULL))
-	sed -f lib/addstyle.sed $< > $@
+	sed -f $(LIBDIR)/addstyle.sed $< > $@
 else
-	sed -f lib/addstyle.sed $< -f lib/addribbon.sed | \
+	sed -f $(LIBDIR)/addstyle.sed -f $(LIBDIR)/addribbon.sed $< | \
 	  sed -e 's~{SLUG}~$(CI_REPO_FULL)~' > $@
 endif
 
@@ -68,7 +85,7 @@ argcat5 = $(call argcat3,$(1),$(2),$(call argcat3,$(3),$(4),$(5)))
 
 .INTERMEDIATE: $(join $(drafts_prev),$(draft_types))
 define makerule_diff =
-$$(call arg,1,$(1)): $$(call arg,2,$(1)) $$(call arg,3,$(1))
+$$(call arg,1,$(1)): $$(call arg,3,$(1)) $$(call arg,2,$(1))
 	-$(rfcdiff) --html --stdout $$^ > $$@
 endef
 diff_deps := $(call argcat3,$(draft_diffs),$(drafts_next_txt),$(drafts_prev_txt))

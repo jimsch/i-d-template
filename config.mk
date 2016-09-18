@@ -4,7 +4,7 @@
 
 # Mandatory:
 #   https://pypi.python.org/pypi/xml2rfc
-xml2rfc ?= xml2rfc
+xml2rfc ?= xml2rfc -q
 
 # If you are using markdown files:
 #   https://github.com/cabo/kramdown-rfc2629
@@ -29,4 +29,5 @@ enscript ?= enscript
 ps2pdf ?= ps2pdf
 
 # Where to get references
-XML_RESOURCE_ORG_PREFIX ?= http://unicorn-wg.github.io/idrefs
+# Use http://xml2rfc.tools.ietf.org/public/rfc if this fails.
+XML_RESOURCE_ORG_PREFIX ?= https://xml2rfc.tools.ietf.org/public/rfc

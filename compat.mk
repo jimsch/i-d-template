@@ -1,13 +1,11 @@
-ifeq (3,$(word 1,$(subst ., ,$(MAKE_VERSION))))
+ifeq (3Darwin,$(word 1,$(subst ., ,$(MAKE_VERSION)))$(shell uname -s))
 $(warning =================================================)
-$(warning GNU Make version $(MAKE_VERSION) isn't supported)
-$(warning You should upgrade to version 4)
-ifeq (Darwin,$(shell uname -s))
-$(warning -- OS X:)
+$(warning The version of make installed with Xcode isn't supported.)
+$(warning Install a newer version.)
 $(warning With homebrew (https://brew.sh) type:)
 $(warning $$ brew tap homebrew/dupes)
 $(warning $$ brew install homebrew/dupes/make)
 $(warning Note: This installs make as `gmake`)
-endif
 $(warning =================================================)
+$(error Aborting)
 endif

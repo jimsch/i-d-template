@@ -9,16 +9,32 @@ Mac users will need to install [Homebrew](https://brew.sh) to get a version of
 
 ```sh
 brew tap homebrew/dupes && brew install homebrew/dupes/make
-ln -s /usr/local/gmake /usr/local/make
+```
+
+Add an alias to your `.profile` so that typing 'make' uses `gmake`:
+
+```sh
+alias make=gmake
 ```
 
 Windows users will need to use [Cygwin](http://cygwin.org/) to get `make`.
+The fearless can use [bash](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).
 
 ## xml2rfc
 
 All systems require [xml2rfc](http://xml2rfc.ietf.org/).  This
 requires [Python](https://www.python.org/).  The easiest way to get
-`xml2rfc` is with `pip`.
+`xml2rfc` is with [pip](https://pip.pypa.io/en/stable/installing/), which
+is either installed with python, or part of the `python-pip` package
+on most distributions.
+
+On Cygwin, you'll need to install `pip` directly:
+
+```sh
+$ curl https://bootstrap.pypa.io/get-pip.py | python
+```
+
+Once pip is installed, you can install xml2rfc.
 
 Using a `virtualenv`:
 
@@ -43,13 +59,13 @@ $ sudo pip install xml2rfc
 
 xml2rfc depends on development versions of [libxml2](http://xmlsoft.org/) and
 [libxslt1](http://xmlsoft.org/XSLT).  These packages are named `libxml2-dev` and
-`libxslt1-dev` (Debian, Ubuntu) or `libxml2-devel` and `libxslt1-devel` (RedHat,
-Fedora).
+`libxslt1-dev` (Debian, Ubuntu); `libxml2-devel` and `libxslt1-devel` (RedHat,
+Fedora); or `libxml2-devel` and `libxslt-devel` (Cygwin).
 
 ## kramdown-rfc2629
 
 If you use markdown, you will also need to install `kramdown-rfc2629`,
-which requires Ruby and can be installed using the roby package
+which requires Ruby and can be installed using the Ruby package
 manager, `gem`:
 
 ```sh
